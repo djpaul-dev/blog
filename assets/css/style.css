@@ -1,8 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Nova+Square&family=Righteous&family=Roboto:wght@300;500;700&family=Tektur:wdth,wght@75..100,400..900&display=swap');
 
+:root {
+    --light_text: #6c6b6b;
+    --backgroud_color: #E9DEBE;
+    --max-width: 600px;
+}
+
 body {
     background-image: url('../images/texture.png');
-    background-color: #E9DEBE;
+    background-color: var(--backgroud_color);
     background-attachment: fixed;
     font-weight: bold;
 
@@ -20,7 +26,7 @@ body {
     flex-direction: column;
     align-items: center;
     width: 100%;
-    max-width: 600px;
+    max-width: var(--max-width);
     padding: 1rem;
 }
 
@@ -50,15 +56,14 @@ body {
     font-family: "Tektur", sans-serif;
     font-variation-settings: "wdth" 90;
     font-weight: 100;
-    color: #6c6b6b;
-
+    color: var(--light_text);
 
     display: flex;
     flex-direction: column;
     align-items: flex-start;
 
     width: 80%;
-    max-width: 600px;
+    max-width: var(--max-width);
     padding: 1rem;
     margin-top: 50%;  /* Ensure the banner always starts from center, even when there's more content */
 }
@@ -69,7 +74,7 @@ body {
     display: flex;
     flex-direction: column;
     width: 80%;
-    max-width: 600px;
+    max-width: var(--max-width);
     padding: 1rem;
 }
 
@@ -101,9 +106,9 @@ article .article_desc {
 article .article_desc .read_more {
     text-decoration: underline;
     text-decoration-style: dotted;
-    text-decoration-color: #727272; /* Match the underline color to the text color */
-    text-underline-offset: 3px; /* Adjust the offset value as needed */
-    color: #343434;
+    text-decoration-color: var(--light_text); /* Underline color should be ligter than text color */
+    text-underline-offset: 3px; /* vertical offset so it doesn't touch text */
+    color: var(--light_text);
 }
 
 /* Hover effect for article titles */
@@ -115,3 +120,24 @@ article:hover{
 
 
 /* FOOTER SECTION *****************************************************************************************************/
+#footer {
+    font-family: "Nova Square", sans-serif;
+    color: var(--light_text);
+    margin-top: 50%;
+
+    /* css layout */
+    display: flex;
+    justify-content: space-between;
+    width: 80%;
+    max-width: var(--max-width);
+    padding: 1rem;
+}
+
+#footer a {
+    color: var(--light_text);
+}
+
+#footer .footer-icons {
+    display: flex;
+    gap: 25%;
+}
