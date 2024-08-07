@@ -1,22 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Nova+Square&family=Righteous&family=Roboto:wght@300;500;700&family=Tektur:wdth,wght@75..100,400..900&display=swap');
+
 body {
     background-image: url('../images/texture.png');
     background-color: #E9DEBE;
     background-attachment: fixed;
+    font-weight: bold;
 
+
+    /* CSS Layout */
     display: flex;
     justify-content: center;
     min-height: 100vh;
     margin: 0;
 }
 
-#profile_pic {
-    border-radius: 50%;
-    height: 8rem;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border: 10px double #000;
-}
-
-/* This contains the 3 sections: banner, articles, footer */
+/* This div contains the 3 sections: banner, articles, footer */
 #main {
     display: flex;
     flex-direction: column;
@@ -26,8 +24,35 @@ body {
     padding: 1rem;
 }
 
-/* Contains profile pic and Intro Msg */
+/* BANNER SECTION *************************************************************************************************** */
+
+/* Profile Picture */
+#profile_pic {
+    border-radius: 50%;
+    height: 8rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border: 10px double #000;
+}
+
+/* Banner Section Title */
+#banner h1 {
+    font-family: "Tektur", sans-serif;
+    font-variation-settings: "wdth" 100;
+    color: black;
+
+}
+
+/* Banner section contains Profile_Pic and Title, Sub-Title */
 #banner {
+    /* font-family: "Josefin Sans", sans-serif; */
+    /* font-family: "Nova Square", sans-serif;  */
+    /* font-family: "Amatic SC", sans-serif; */
+    font-family: "Tektur", sans-serif;
+    font-variation-settings: "wdth" 90;
+    font-weight: 100;
+    color: #6c6b6b;
+
+
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -35,16 +60,12 @@ body {
     width: 80%;
     max-width: 600px;
     padding: 1rem;
-    padding-bottom: 0;  /* Reduce space between banner and articles */
     margin-top: 50%;  /* Ensure the banner always starts from center, even when there's more content */
-
-    /* background-color: #F8F8F8;
-    border-radius: 1rem;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
 }
 
-/* The following is styling for the articles */
+/* ARTICLE SECTION ****************************************************************************************************/
 #articles {
+    font-family: "Amatic SC", sans-serif;
     display: flex;
     flex-direction: column;
     width: 80%;
@@ -52,21 +73,45 @@ body {
     padding: 1rem;
 }
 
+/* Contains the article title and date */
 article header {
     display: flex;
     justify-content: space-between;
 }
 
-article header h2 {
-    font-weight: normal;
+/* Titles */
+article header a .article_title {
     padding-right: 10%;
 }
 
+/* Dates */
 article header .date {
     color: #666;
     align-self: center;
     white-space: nowrap;
 }
 
+/* Article Description */
+article .article_desc {
+    font-family: "Josefin Sans", sans-serif;
+    font-weight: 300;
+}
 
-/* Footer Styling */
+/* Article Description Ream More link */
+article .article_desc .read_more {
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-decoration-color: #727272; /* Match the underline color to the text color */
+    text-underline-offset: 3px; /* Adjust the offset value as needed */
+    color: #343434;
+}
+
+/* Hover effect for article titles */
+article:hover{
+    box-shadow:0px 0px 2px 0px #000;
+    padding: 5%;
+    padding-top: 0%;
+}
+
+
+/* FOOTER SECTION *****************************************************************************************************/
