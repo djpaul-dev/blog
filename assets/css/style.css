@@ -85,8 +85,10 @@ article header {
 }
 
 /* Titles */
-article header a .article_title {
+article header .article_title {
     padding-right: 10%;
+    text-decoration: none;
+    color: black;
 }
 
 /* Dates */
@@ -111,11 +113,25 @@ article .article_desc .read_more {
     color: var(--light_text);
 }
 
-/* Hover effect for article titles */
+/* Hover effect for articles */
 article:hover{
     box-shadow:0px 0px 2px 0px #000;
     padding: 5%;
     padding-top: 0%;
+}
+
+/* Hover effect for article titles */
+article header .article_title:hover {
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-decoration-color: var(--light_text); /* Underline color should be ligter than text color */
+    text-underline-offset: 3px; /* vertical offset so it doesn't touch text */
+    color: var(--light_text);    
+}
+
+/* Hover effect for article "read more"s */
+article .article_desc .read_more:hover {
+    text-decoration: none;
 }
 
 
