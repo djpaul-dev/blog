@@ -1,0 +1,72 @@
+body {
+    background-image: url('../images/texture.png');
+    background-color: #E9DEBE;
+    background-attachment: fixed;
+
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+}
+
+#profile_pic {
+    border-radius: 50%;
+    height: 8rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border: 10px double #000;
+}
+
+/* This contains the 3 sections: banner, articles, footer */
+#main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 600px;
+    padding: 1rem;
+}
+
+/* Contains profile pic and Intro Msg */
+#banner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    width: 80%;
+    max-width: 600px;
+    padding: 1rem;
+    padding-bottom: 0;  /* Reduce space between banner and articles */
+    margin-top: 50%;  /* Ensure the banner always starts from center, even when there's more content */
+
+    /* background-color: #F8F8F8;
+    border-radius: 1rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
+}
+
+/* The following is styling for the articles */
+#articles {
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    max-width: 600px;
+    padding: 1rem;
+}
+
+article header {
+    display: flex;
+    justify-content: space-between;
+}
+
+article header h2 {
+    font-weight: normal;
+    padding-right: 10%;
+}
+
+article header .date {
+    color: #666;
+    align-self: center;
+    white-space: nowrap;
+}
+
+
+/* Footer Styling */
