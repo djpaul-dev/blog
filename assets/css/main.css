@@ -6,6 +6,12 @@
     --max-width: 1000px;
 }
 
+@font-face {
+    font-family: OPTICubaLibreTwo;
+    font-weight: bolder;
+    src: url("../fonts/OPTICubaLibreTwo.otf") format("opentype");
+}
+
 body {
     background-image: url('../images/texture.png');
     background-color: var(--backgroud_color);
@@ -66,7 +72,7 @@ body {
 
 /* ARTICLE SECTION ****************************************************************************************************/
 #articles {
-    font-family: "Delius", cursive;
+    font-family: "OPTICubaLibreTwo";
 
     display: flex;
     flex-direction: column;
