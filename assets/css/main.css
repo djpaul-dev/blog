@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Nova+Square&family=Righteous&family=Roboto:wght@300;500;700&family=Tektur:wdth,wght@75..100,400..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Delius&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Nova+Square&family=Righteous&family=Roboto:wght@300;500;700&family=Tektur:wght@400..900&display=swap');
 
 :root {
     --light_text: #6c6b6b;
@@ -41,16 +41,14 @@ body {
 /* Banner Section Title */
 #banner h1 {
     font-family: "Tektur", sans-serif;
-    font-variation-settings: "wdth" 100;
+    font-variation-settings: "wdth" 50;
+    font-size: 3rem;
     color: black;
-
+    margin-bottom: 0;
 }
 
 /* Banner section contains Profile_Pic and Title, Sub-Title */
 #banner {
-    /* font-family: "Josefin Sans", sans-serif; */
-    /* font-family: "Nova Square", sans-serif;  */
-    /* font-family: "Amatic SC", sans-serif; */
     font-family: "Tektur", sans-serif;
     font-variation-settings: "wdth" 90;
     font-weight: 100;
@@ -60,7 +58,7 @@ body {
     flex-direction: column;
     align-items: flex-start;
 
-    width: 80%;
+    width: 100%;
     max-width: var(--max-width);
     padding: 1rem;
     margin-top: 50%;  /* Ensure the banner always starts from center, even when there's more content */
@@ -68,10 +66,11 @@ body {
 
 /* ARTICLE SECTION ****************************************************************************************************/
 #articles {
-    font-family: "Amatic SC", sans-serif;
+    font-family: "Delius", cursive;
+
     display: flex;
     flex-direction: column;
-    width: 80%;
+    width: 100%;
     max-width: var(--max-width);
     padding: 1rem;
 }
@@ -79,6 +78,7 @@ body {
 /* Article Element */
 article {
     padding: 5%;
+    padding-top: 0;
 }
 
 /* Contains the article title and date */
@@ -146,7 +146,7 @@ article .article_desc .read_more:hover {
     /* css layout */
     display: flex;
     justify-content: space-between;
-    width: 80%;
+    width: 100%;
     max-width: var(--max-width);
     padding: 1rem;
 }
