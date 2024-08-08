@@ -3,7 +3,7 @@
 :root {
     --light_text: #6c6b6b;
     --backgroud_color: #E9DEBE;
-    --max-width: 600px;
+    --max-width: 1000px;
 }
 
 body {
@@ -61,7 +61,7 @@ body {
     width: 100%;
     max-width: var(--max-width);
     padding: 1rem;
-    margin-top: 50%;  /* Ensure the banner always starts from center, even when there's more content */
+    margin-top: 25%;  /* Ensure the banner always starts from center, even when there's more content */
 }
 
 /* ARTICLE SECTION ****************************************************************************************************/
@@ -141,7 +141,7 @@ article .article_desc .read_more:hover {
 #footer {
     font-family: "Nova Square", sans-serif;
     color: var(--light_text);
-    margin-top: 50%;
+    margin-top: 25%;
 
     /* css layout */
     display: flex;
