@@ -1,0 +1,65 @@
+@import url('https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Nova+Square&family=Righteous&family=Roboto:wght@300;500;700&family=Tektur:wdth,wght@75..100,400..900&display=swap');
+
+:root {
+    --light_text: #6c6b6b;
+    --backgroud_color: #E9DEBE;
+    --max-width: 600px;
+}
+
+body {
+    background-image: url('../images/texture.png');
+    background-color: var(--backgroud_color);
+    background-attachment: fixed;
+
+    /* CSS Layout */
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+}
+
+/* This div contains the 2 sections: Content, Footer */
+#main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: var(--max-width);
+    padding: 1rem;
+}
+
+.previous_button {
+    text-decoration: none;
+    color: black;
+}
+
+.previous_button:hover {
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-decoration-color: var(--light_text); /* Underline color should be ligter than text color */
+    text-underline-offset: 3px; /* vertical offset so it doesn't touch text */
+    color: var(--light_text);        
+}
+
+/* FOOTER SECTION *****************************************************************************************************/
+#footer {
+    font-family: "Nova Square", sans-serif;
+    color: var(--light_text);
+    margin-top: 50%;
+
+    /* css layout */
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: var(--max-width);
+    padding: 1rem;
+}
+
+#footer a {
+    color: var(--light_text);
+}
+
+#footer .footer-icons {
+    display: flex;
+    gap: 25%;
+}
