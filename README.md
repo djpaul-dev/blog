@@ -12,9 +12,3 @@ Rough Tentative Topics:
 - [Connect subdomain to Github Project Repo](https://stackoverflow.com/questions/46455900/subdomain-of-website-for-github-pages-project)
 - [Schema](https://schema.org/Article)
 - [CSS Clip Path Maker](https://bennettfeely.com/clippy/)
-
-### New Article TodoList:
-- Add New Article with numbered comment
-- adjust hyperlinks
-- add keywords and desc meta tags
-- adjust date in index.html and article.html
