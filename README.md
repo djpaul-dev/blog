@@ -2,6 +2,10 @@
 
 This is my personal blog. This is collection of my thoughts on life, technology, productivity, and everything in-between.
 
+Rough Tentative Topics:
+- Philosophy Talks
+- Bugfixes Blurbs
+- Project / Fancy-Function Implementations
 
 ### Some useful links for anyone who wants to setup a blog like this:
 - [Project Repos on Github](https://code.likeagirl.io/how-to-host-multiple-websites-on-github-b5ed19a86dbe)

@@ -3,7 +3,7 @@
 :root {
     --light_text: #6c6b6b;
     --backgroud_color: #E9DEBE;
-    --max-width: 600px;
+    --max-width: 1000px;
 }
 
 body {
@@ -45,7 +45,7 @@ body {
 #footer {
     font-family: "Nova Square", sans-serif;
     color: var(--light_text);
-    margin-top: 50%;
+    margin-top: 25%;
 
     /* css layout */
     display: flex;
