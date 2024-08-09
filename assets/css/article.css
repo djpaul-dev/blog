@@ -20,17 +20,54 @@ body {
 
 /* This div contains the 2 sections: Content, Footer */
 #main {
+    margin-top: 3%;
     display: flex;
     flex-direction: column;
-    align-items: center;
     width: 100%;
     max-width: var(--max-width);
     padding: 1rem;
 }
 
-.previous_button {
-    text-decoration: none;
+/* Button Design Guide: https://youtu.be/rdUu6E7MrCE?si=iTOAxCyA1LWJBD9G */
+.home {
+    margin-top: 15%;
+    align-self: center;
+}
+
+.home a {
+    font-family: "Tektur", sans-serif;
+    font-variation-settings: "wdth" 50;
+    padding: 0.5rem;
     color: black;
+    border: 5px double black;
+    text-decoration: none;
+    font-weight: 1000;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    transition: 0.5s;
+}
+
+.home a:hover {
+    background: black;
+    color: white;
+    border: 5px double var(--backgroud_color);
+}
+
+/* CONTENT SECTION ****************************************************************************************************/
+
+#citation {
+    color: var(--light_text);
+}
+
+.previous {
+    color: rgb(140, 140, 140);
+    display: inline;
+}
+
+.previous .previous_button {
+    text-decoration: none;
+    color: var(--light_text);
+
 }
 
 .previous_button:hover {
@@ -38,7 +75,6 @@ body {
     text-decoration-style: dotted;
     text-decoration-color: var(--light_text); /* Underline color should be ligter than text color */
     text-underline-offset: 3px; /* vertical offset so it doesn't touch text */
-    color: var(--light_text);        
 }
 
 /* FOOTER SECTION *****************************************************************************************************/
