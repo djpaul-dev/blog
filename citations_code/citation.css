@@ -1,0 +1,11 @@
+.citation {
+    font-style: italic;
+  }
+  
+#bibliography {
+margin-top: 20px;
+}
+
+#bibliography .csl-entry {
+margin-bottom: 10px;
+}
