@@ -12,20 +12,21 @@ body {
     color: var(--text-color);
     font-family: 'Inter', sans-serif;
     margin: 0;
-    padding: 40px 20px;
+    padding: 0;
     display: flex;
     justify-content: center;
 }
 
 #admin-container {
     width: 100%;
-    max-width: 900px;
+    max-width: 1000px; /* Centered writing container */
     background: var(--card-bg);
     backdrop-filter: blur(10px);
-    border: 1px solid var(--glass-border);
-    border-radius: 16px;
-    padding: 40px;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    border: none;
+    border-radius: 0;
+    padding: 60px 80px;
+    min-height: 100vh;
+    box-shadow: 0 0 50px rgba(0,0,0,0.5);
 }
 
 header h1 {
@@ -112,14 +113,26 @@ header p {
 #preview-body {
     flex: 1;
     overflow-y: auto;
-    padding: 40px;
+    padding: 40px 0;
     background-color: #E9DEBE; /* Match article background */
     background-image: url('../assets/images/texture.png');
+    display: flex;
+    justify-content: center;
+}
+
+#main-preview {
+    width: 100%;
+    max-width: 1000px; /* Match frontend article width */
+    padding: 20px;
+}
+
+#content-preview {
+    text-align: left; /* Content should definitely be left aligned */
 }
 
 /* Accuracy for Preview */
-#content-preview h1 { font-family: "Tektur", sans-serif; text-align: center; }
-#content-preview h5 { color: #6c6b6b; text-align: center; margin-bottom: 30px; }
+#content-preview h1 { font-family: "Tektur", sans-serif; text-align: left; margin-bottom: 20px; }
+#content-preview h5 { color: #6c6b6b; text-align: left; margin-bottom: 40px; }
 
 .ql-editor img {
     cursor: nwse-resize;
@@ -163,30 +176,30 @@ input:focus, textarea:focus {
 }
 
 #editor-container {
-    height: 400px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
+    height: 600px; /* Taller editor */
+    background: transparent;
+    border: none;
+    border-radius: 0;
     color: white;
 }
 
-/* Quill Editor Customization */
 .ql-toolbar.ql-snow {
-    border: 1px solid var(--border-color);
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
+    border: none;
+    border-bottom: 1px solid var(--border-color);
     background: #161b22;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
 .ql-container.ql-snow {
-    border: 1px solid var(--border-color);
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
+    border: none;
 }
 
 .ql-editor {
-    font-size: 1.1rem;
-    line-height: 1.6;
+    font-size: 1.2rem;
+    line-height: 1.8;
+    padding: 40px 0;
 }
 
 .ql-snow .ql-stroke {
@@ -194,9 +207,31 @@ input:focus, textarea:focus {
 }
 
 .actions {
-    margin-top: 32px;
+    margin-top: 40px;
     display: flex;
-    justify-content: flex-end;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 15px;
+}
+
+#gen-message {
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    width: 100%;
+    text-align: center;
+}
+
+#gen-message.success {
+    background: rgba(46, 160, 67, 0.2);
+    color: #3fb950;
+    border: 1px solid rgba(46, 160, 67, 0.4);
+}
+
+#gen-message.error {
+    background: rgba(248, 81, 73, 0.2);
+    color: #f85149;
+    border: 1px solid rgba(248, 81, 73, 0.4);
 }
 
 button#generate-btn {
@@ -252,10 +287,15 @@ pre {
     color: #d1d5db;
 }
 
-.copy-btn {
+.button-group {
+    display: flex;
+    gap: 10px;
     position: absolute;
     top: 10px;
     right: 10px;
+}
+
+.copy-btn, .button-group .secondary-btn {
     background: var(--border-color);
     color: white;
     border: none;
@@ -263,8 +303,9 @@ pre {
     border-radius: 4px;
     font-size: 0.8rem;
     cursor: pointer;
+    font-weight: normal;
 }
 
-.copy-btn:hover {
+.copy-btn:hover, .button-group .secondary-btn:hover {
     background: #484f58;
 }

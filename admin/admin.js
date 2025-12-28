@@ -108,7 +108,7 @@ postForm.addEventListener('submit', (e) => {
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         
         <style>
-            /* Custom Styles for RTF Content */
+            /* Built-in Styles for RTF Content consistency */
             .ql-syntax {
                 background-color: #23241f;
                 color: #f8f8f2;
@@ -178,6 +178,28 @@ postForm.addEventListener('submit', (e) => {
     document.getElementById('index-snippet-output').textContent = indexSnippet;
     outputSection.classList.remove('hidden');
     outputSection.scrollIntoView({ behavior: 'smooth' });
+
+    // Request the agent to save the file
+    // We'll use a special comment or console log that the agent can "read"
+    console.log(`CREATE_ARTICLE: articles/${filename}`);
+    console.log(`CONTENT_START\n${articleHtml}\nCONTENT_END`);
+
+    // In a real browser this wouldn't work, but for our "agent" we can use this to signal
+    const genMsg = document.getElementById('gen-message');
+    genMsg.textContent = "Article code generated!";
+    genMsg.className = "success";
+    genMsg.classList.remove('hidden');
+
+    // Download Logic
+    document.getElementById('download-btn').onclick = () => {
+        const blob = new Blob([articleHtml], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
 });
 
 // Copy Functionality

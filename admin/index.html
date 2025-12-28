@@ -51,24 +51,30 @@
             </div>
 
             <div class="actions">
-                <button type="submit" id="generate-btn">Generate Post Snippets</button>
+                <div id="gen-message" class="hidden"></div>
+                <button type="submit" id="generate-btn">Generate & Save Article</button>
             </div>
         </form>
 
         <section id="output-section" class="hidden">
             <div class="output-block">
-                <h3>1. New Article File Content (Save as <code>articles/[filename]</code>)</h3>
+                <h3>1. New Article File Content (for <code>articles/</code>)</h3>
                 <div class="code-wrapper">
                     <pre><code id="article-html-output"></code></pre>
-                    <button class="copy-btn" data-target="article-html-output">Copy</button>
+                    <div class="button-group">
+                        <button class="copy-btn" data-target="article-html-output">Copy</button>
+                        <button id="download-btn" class="secondary-btn">Save as File</button>
+                    </div>
                 </div>
             </div>
 
             <div class="output-block">
-                <h3>2. Index.html Snippet (Paste into <code>index.html</code>)</h3>
+                <h3>2. Snippet for <code>index.html</code> (Manual Paste Required)</h3>
                 <div class="code-wrapper">
                     <pre><code id="index-snippet-output"></code></pre>
-                    <button class="copy-btn" data-target="index-snippet-output">Copy</button>
+                    <div class="button-group">
+                        <button class="copy-btn" data-target="index-snippet-output">Copy</button>
+                    </div>
                 </div>
             </div>
         </section>
