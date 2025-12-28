@@ -20,66 +20,117 @@ const quill = new Quill('#editor-container', {
 const postForm = document.getElementById('post-form');
 const outputSection = document.getElementById('output-section');
 const previewBtn = document.getElementById('preview-btn');
-const previewModal = document.getElementById('preview-modal');
-const closePreview = document.getElementById('close-preview');
-const previewContent = document.getElementById('content-preview');
 
-// Preview Logic
-previewBtn.addEventListener('click', () => {
+// This will be used to inject the real CSS for the preview
+const ARTICLE_CSS_CONTENT = `
+@import url('https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Nova+Square&family=Righteous&family=Roboto:wght@300;500;700&family=Tektur:wdth,wght@75..100,400..900&display=swap');
+
+:root {
+    --light_text: #6c6b6b;
+    --backgroud_color: #E9DEBE;
+    --max-width: 1000px;
+}
+
+body {
+    background-color: var(--backgroud_color);
+    background-attachment: fixed;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+}
+
+#main {
+    margin-top: 3%;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: var(--max-width);
+    padding: 1rem;
+}
+
+.home {
+    margin-top: 15%;
+    align-self: center;
+}
+
+.home a {
+    font-family: "Tektur", sans-serif;
+    font-variation-settings: "wdth" 50;
+    padding: 0.5rem;
+    color: black;
+    border: 5px double black;
+    text-decoration: none;
+    font-weight: 1000;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    transition: 0.5s;
+}
+
+.home a:hover {
+    background: black;
+    color: white;
+    border: 5px double var(--backgroud_color);
+}
+
+#citation {
+    color: var(--light_text);
+}
+
+.previous {
+    color: rgb(140, 140, 140);
+    display: inline;
+}
+
+.previous .previous_button {
+    text-decoration: none;
+    color: var(--light_text);
+}
+
+.previous_button:hover {
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-decoration-color: var(--light_text);
+    text-underline-offset: 3px;
+}
+
+#footer {
+    font-family: "Nova Square", sans-serif;
+    color: var(--light_text);
+    margin-top: 25%;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: var(--max-width);
+    padding: 1rem;
+}
+
+#footer a {
+    color: var(--light_text);
+}
+
+#footer .footer-icons {
+    display: flex;
+    gap: 25%;
+}
+`;
+
+function generateArticleHTML(isPreview = false) {
     const title = document.getElementById('title').value || "Article Title";
     const dateInput = document.getElementById('date').value;
+    const description = document.getElementById('description').value || "Short description...";
     const content = quill.root.innerHTML;
 
-    // Format date for preview
+    // Format date
     let formattedDate = "Publish Date";
+    let isoDate = dateInput || new Date().toISOString().split('T')[0];
     if (dateInput) {
         const dateObj = new Date(dateInput + 'T00:00:00');
         const options = { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' };
         formattedDate = dateObj.toLocaleDateString('en-US', options);
     }
 
-    previewContent.innerHTML = `
-        <h1>${title}</h1>
-        <h5>By Dhruba Jyoti Paul | ${formattedDate}</h5>
-        <div>${content}</div>
-    `;
-    previewModal.classList.remove('hidden');
-});
-
-closePreview.addEventListener('click', () => {
-    previewModal.classList.add('hidden');
-});
-
-// Close modal when clicking outside
-window.addEventListener('click', (e) => {
-    if (e.target === previewModal) {
-        previewModal.classList.add('hidden');
-    }
-});
-
-postForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    const title = document.getElementById('title').value;
-    const dateInput = document.getElementById('date').value;
-    let filename = document.getElementById('filename').value;
-    const description = document.getElementById('description').value;
-    const content = quill.root.innerHTML;
-
-    // Ensure filename ends with .html
-    if (!filename.toLowerCase().endsWith('.html')) {
-        filename += '.html';
-    }
-
-    // Format date for display (e.g., July 2, 2024)
-    // Use UTC components to avoid timezone offsets causing "previous day" issues
-    const dateObj = new Date(dateInput + 'T00:00:00'); 
-    const options = { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' };
-    const formattedDate = dateObj.toLocaleDateString('en-US', options);
-    const isoDate = dateInput; // YYYY-MM-DD
-
-    // Generate Article HTML (Template based on articles/article1.html)
-    const articleHtml = `<!DOCTYPE HTML>
+    return `<!DOCTYPE HTML>
 <html lang="en">
 	<head>
         <!-- Google tag (gtag.js) -->
@@ -103,7 +154,7 @@ postForm.addEventListener('submit', (e) => {
         <meta name="description" content="${description.replace(/"/g, '&quot;')}">
 
         <!-- Links -->
-        <link rel="stylesheet" href="../assets/css/article.css" />
+        ${isPreview ? `<style>${ARTICLE_CSS_CONTENT}</style>` : '<link rel="stylesheet" href="../assets/css/article.css" />'}
 		<link rel="icon" type="image/x-icon" href="../assets/images/tab_icon.png">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         
@@ -159,8 +210,36 @@ postForm.addEventListener('submit', (e) => {
         </div>
 	</body>
 </html>`;
+}
 
-    // Generate Index Snippet (Template based on index.html)
+// Preview Logic - Open in new tab
+previewBtn.addEventListener('click', () => {
+    const html = generateArticleHTML(true);
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+});
+
+postForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const title = document.getElementById('title').value;
+    const description = document.getElementById('description').value;
+    const dateInput = document.getElementById('date').value;
+    let filename = document.getElementById('filename').value;
+
+    if (!filename.toLowerCase().endsWith('.html')) {
+        filename += '.html';
+    }
+
+    const articleHtml = generateArticleHTML();
+
+    // Format date for snippets
+    const dateObj = new Date(dateInput + 'T00:00:00');
+    const options = { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' };
+    const formattedDate = dateObj.toLocaleDateString('en-US', options);
+
+    // Generate Index Snippet
     const indexSnippet = `<!-- Article -->
 <article>
     <header>
@@ -179,12 +258,6 @@ postForm.addEventListener('submit', (e) => {
     outputSection.classList.remove('hidden');
     outputSection.scrollIntoView({ behavior: 'smooth' });
 
-    // Request the agent to save the file
-    // We'll use a special comment or console log that the agent can "read"
-    console.log(`CREATE_ARTICLE: articles/${filename}`);
-    console.log(`CONTENT_START\n${articleHtml}\nCONTENT_END`);
-
-    // In a real browser this wouldn't work, but for our "agent" we can use this to signal
     const genMsg = document.getElementById('gen-message');
     genMsg.textContent = "Article code generated!";
     genMsg.className = "success";
