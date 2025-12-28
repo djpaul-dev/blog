@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BITSTREAM Admin - Post Article</title>
+    <!-- Quill RTE -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <link rel="stylesheet" href="admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Outfit:wght@500;700&display=swap" rel="stylesheet">
+    <!-- Blot Formatter for Resizing -->
+    <script src="https://cdn.jsdelivr.net/npm/quill-blot-formatter@1.0.5/dist/quill-blot-formatter.min.js"></script>
+</head>
+<body>
+    <div id="admin-container">
+        <header>
+            <div class="header-main">
+                <div>
+                    <h1>BITSTREAM Admin</h1>
+                    <p>Create and publish new stories.</p>
+                </div>
+                <button type="button" id="preview-btn" class="secondary-btn">Live Preview</button>
+            </div>
+        </header>
+
+        <form id="post-form">
+            <div class="input-group">
+                <label for="title">Article Title</label>
+                <input type="text" id="title" placeholder="e.g. The Chronicles of Narnia" required>
+            </div>
+
+            <div class="grid">
+                <div class="input-group">
+                    <label for="date">Publish Date</label>
+                    <input type="date" id="date" required>
+                </div>
+                <div class="input-group">
+                    <label for="filename">Filename</label>
+                    <input type="text" id="filename" placeholder="article_name.html" required>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="description">Short Description (for Index)</label>
+                <textarea id="description" rows="3" placeholder="Brief summary of the article..." required></textarea>
+            </div>
+
+            <div class="input-group">
+                <label>Article Content</label>
+                <div id="editor-container"></div>
+            </div>
+
+            <div class="actions">
+                <button type="submit" id="generate-btn">Generate Post Snippets</button>
+            </div>
+        </form>
+
+        <section id="output-section" class="hidden">
+            <div class="output-block">
+                <h3>1. New Article File Content (Save as <code>articles/[filename]</code>)</h3>
+                <div class="code-wrapper">
+                    <pre><code id="article-html-output"></code></pre>
+                    <button class="copy-btn" data-target="article-html-output">Copy</button>
+                </div>
+            </div>
+
+            <div class="output-block">
+                <h3>2. Index.html Snippet (Paste into <code>index.html</code>)</h3>
+                <div class="code-wrapper">
+                    <pre><code id="index-snippet-output"></code></pre>
+                    <button class="copy-btn" data-target="index-snippet-output">Copy</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Preview Modal -->
+    <div id="preview-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Live Preview</h2>
+                <button id="close-preview">&times;</button>
+            </div>
+            <div id="preview-body">
+                <div id="main-preview">
+                    <div id="content-preview">
+                        <!-- Preview content goes here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quill library -->
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>
