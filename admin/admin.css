@@ -51,6 +51,11 @@ header p {
     align-items: flex-start;
 }
 
+.header-actions {
+    display: flex;
+    gap: 12px;
+}
+
 .secondary-btn {
     background: rgba(255, 255, 255, 0.1);
     color: white;
@@ -64,6 +69,12 @@ header p {
 
 .secondary-btn:hover {
     background: rgba(255, 255, 255, 0.2);
+}
+
+.success-flash {
+    color: #3fb950 !important;
+    border-color: #3fb950 !important;
+    background: rgba(46, 160, 67, 0.1) !important;
 }
 
 

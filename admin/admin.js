@@ -20,6 +20,62 @@ const quill = new Quill('#editor-container', {
 const postForm = document.getElementById('post-form');
 const outputSection = document.getElementById('output-section');
 const previewBtn = document.getElementById('preview-btn');
+const importBtn = document.getElementById('import-btn');
+const importInput = document.getElementById('import-input');
+
+// Import Article Logic
+importBtn.addEventListener('click', () => importInput.click());
+
+importInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        const html = event.target.result;
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+
+        // Extract Title
+        const titleTag = doc.querySelector('title');
+        let title = "";
+        if (titleTag) {
+            title = titleTag.textContent.replace('BITSTREAM - ', '').trim();
+        }
+
+        // Extract Description
+        const descTag = doc.querySelector('meta[name="description"]');
+        const description = descTag ? descTag.getAttribute('content') : "";
+
+        // Extract Date
+        const timeTag = doc.querySelector('time[itemprop="datePublished"]');
+        const date = timeTag ? timeTag.getAttribute('datetime') : "";
+
+        // Extract Content
+        const contentDiv = doc.querySelector('[itemprop="articleBody"]');
+        const content = contentDiv ? contentDiv.innerHTML.trim() : "";
+
+        // Populate Fields
+        document.getElementById('title').value = title;
+        document.getElementById('date').value = date;
+        document.getElementById('filename').value = file.name;
+        document.getElementById('description').value = description;
+        quill.root.innerHTML = content;
+
+        // Reset input so the same file can be re-imported if needed
+        importInput.value = "";
+        
+        // Brief success feedback
+        const originalText = importBtn.textContent;
+        importBtn.textContent = "Imported!";
+        importBtn.classList.add('success-flash');
+        setTimeout(() => {
+            importBtn.textContent = originalText;
+            importBtn.classList.remove('success-flash');
+        }, 2000);
+    };
+    reader.readAsText(file);
+});
 
 // This will be used to inject the real CSS for the preview
 const ARTICLE_CSS_CONTENT = `
