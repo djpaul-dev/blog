@@ -1,21 +1,59 @@
 // Register Resize Module
 Quill.register('modules/blotFormatter', QuillBlotFormatter.default);
 
+// Custom Cite Module for Quill
+const Inline = Quill.import('blots/inline');
+class CitationBlot extends Inline {
+    static create(value) {
+        let node = super.create();
+        node.setAttribute('data-cite', value);
+        node.setAttribute('class', 'citation');
+        node.setAttribute('title', `Citation: ${value}`);
+        return node;
+    }
+
+    static formats(node) {
+        return node.getAttribute('data-cite');
+    }
+}
+CitationBlot.blotName = 'citation';
+CitationBlot.tagName = 'span';
+Quill.register(CitationBlot);
+
 // Initialize Quill Editor
 const quill = new Quill('#editor-container', {
     theme: 'snow',
     modules: {
         blotFormatter: {}, // Enable resizing
-        toolbar: [
-            [{ 'header': [1, 2, 3, false] }],
-            ['bold', 'italic', 'underline'],
-            ['link', 'blockquote', 'code-block'],
-            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-            ['image', 'video'],
-            ['clean']
-        ]
+        toolbar: {
+            container: [
+                [{ 'header': [1, 2, 3, false] }],
+                ['bold', 'italic', 'underline'],
+                ['link', 'blockquote', 'code-block'],
+                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                ['image', 'video'],
+                ['cite'], // Added Cite button
+                ['clean']
+            ],
+            handlers: {
+                'cite': function () {
+                    const range = this.quill.getSelection();
+                    if (range) {
+                        const key = prompt("Enter BibTeX Citation Key:");
+                        if (key) {
+                            this.quill.formatText(range.index, range.length, 'citation', key);
+                        }
+                    }
+                }
+            }
+        }
     }
 });
+
+// Add custom icon for Cite button
+const citeIcon = '<svg viewBox="0 0 18 18"><path class="ql-stroke" d="M11,4c-2.2,0-4,1.8-4,4s1.8,4,4,4s4-1.8,4-4S13.2,4,11,4z M11,10c-1.1,0-2-0.9-2-2s0.9-2,2-2s2,0.9,2,2S12.1,10,11,10z"/><path class="ql-fill" d="M5,14H3v-2h2V14z M8,14H6v-2h2V14z M11,14H9v-2h2V14z M14,14h-2v-2h2V14z"/></svg>';
+const citeBtn = document.querySelector('.ql-cite');
+if (citeBtn) citeBtn.innerHTML = citeIcon;
 
 const postForm = document.getElementById('post-form');
 const outputSection = document.getElementById('output-section');
@@ -55,16 +93,21 @@ importInput.addEventListener('change', (e) => {
         const contentDiv = doc.querySelector('[itemprop="articleBody"]');
         const content = contentDiv ? contentDiv.innerHTML.trim() : "";
 
+        // Extract BibTeX
+        const bibtexTag = doc.querySelector('#references-bibtex');
+        const bibtex = bibtexTag ? bibtexTag.textContent.trim() : "";
+
         // Populate Fields
         document.getElementById('title').value = title;
         document.getElementById('date').value = date;
         document.getElementById('filename').value = file.name;
         document.getElementById('description').value = description;
+        document.getElementById('bibtex').value = bibtex;
         quill.root.innerHTML = content;
 
         // Reset input so the same file can be re-imported if needed
         importInput.value = "";
-        
+
         // Brief success feedback
         const originalText = importBtn.textContent;
         importBtn.textContent = "Imported!";
@@ -78,104 +121,78 @@ importInput.addEventListener('change', (e) => {
 });
 
 // This will be used to inject the real CSS for the preview
-const ARTICLE_CSS_CONTENT = `
-@import url('https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Nova+Square&family=Righteous&family=Roboto:wght@300;500;700&family=Tektur:wdth,wght@75..100,400..900&display=swap');
+let ARTICLE_CSS_CONTENT = "";
 
-:root {
-    --light_text: #6c6b6b;
-    --backgroud_color: #E9DEBE;
-    --max-width: 1000px;
-}
-
-body {
-    background-color: var(--backgroud_color);
-    background-attachment: fixed;
-    display: flex;
-    justify-content: center;
-    min-height: 100vh;
-    margin: 0;
-}
-
-#main {
-    margin-top: 3%;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    max-width: var(--max-width);
-    padding: 1rem;
-}
-
-.home {
-    margin-top: 15%;
-    align-self: center;
-}
-
-.home a {
-    font-family: "Tektur", sans-serif;
-    font-variation-settings: "wdth" 50;
-    padding: 0.5rem;
-    color: black;
-    border: 5px double black;
-    text-decoration: none;
-    font-weight: 1000;
-    font-size: 0.8rem;
-    letter-spacing: 1px;
-    transition: 0.5s;
-}
-
-.home a:hover {
-    background: black;
-    color: white;
-    border: 5px double var(--backgroud_color);
-}
-
-#citation {
-    color: var(--light_text);
-}
-
-.previous {
-    color: rgb(140, 140, 140);
-    display: inline;
-}
-
-.previous .previous_button {
-    text-decoration: none;
-    color: var(--light_text);
-}
-
-.previous_button:hover {
-    text-decoration: underline;
-    text-decoration-style: dotted;
-    text-decoration-color: var(--light_text);
-    text-underline-offset: 3px;
-}
-
-#footer {
-    font-family: "Nova Square", sans-serif;
-    color: var(--light_text);
-    margin-top: 25%;
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    max-width: var(--max-width);
-    padding: 1rem;
-}
-
-#footer a {
-    color: var(--light_text);
-}
-
-#footer .footer-icons {
-    display: flex;
-    gap: 25%;
-}
-`;
+// Fetch the article CSS on load
+fetch('../assets/css/article.css')
+    .then(response => response.text())
+    .then(css => {
+        ARTICLE_CSS_CONTENT = css;
+    })
+    .catch(err => {
+        console.error("Failed to load article.css:", err);
+        // Fallback or alert? Let's leave it for now.
+    });
 
 function generateArticleHTML(isPreview = false) {
     const title = document.getElementById('title').value || "Article Title";
     const dateInput = document.getElementById('date').value;
     const description = document.getElementById('description').value || "Short description...";
+    const bibtex = document.getElementById('bibtex').value || "";
     const content = quill.root.innerHTML;
+
+    // Formatting Citations Script
+    const CITATION_INIT_SCRIPT = `
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/citation-js/0.7.16/citation.min.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const bibtex = document.getElementById('references-bibtex').textContent.trim();
+                const Cite = (typeof require === 'function') ? require('citation-js') : window.citation.Cite;
+                if (!bibtex || !Cite) return;
+
+                const cite = new Cite(bibtex);
+
+                // Process citations
+                document.querySelectorAll('.citation').forEach(span => {
+                    const key = span.getAttribute('data-cite');
+                    const ref = cite.data.find(entry => entry.id === key);
+                    if (!ref) {
+                        span.innerHTML = '<span style="color: red;">[Ref: ' + key + ' not found]</span>';
+                        return;
+                    }
+                    const singleCite = new Cite(ref);
+                    const citation = singleCite.format('citation', {
+                        format: 'html',
+                        template: 'apa',
+                        lang: 'en-US'
+                    });
+                    span.innerHTML = '<a href="#ref-' + key + '">' + citation + '</a>';
+                });
+
+                // Add bibliography
+                const bibliography = cite.format('bibliography', {
+                    format: 'html',
+                    template: 'apa',
+                    lang: 'en-US'
+                });
+
+                // Inject bibliography div if not present
+                let bibDiv = document.getElementById('bibliography');
+                if (!bibDiv) {
+                    bibDiv = document.createElement('div');
+                    bibDiv.id = 'bibliography';
+                    document.getElementById('content').appendChild(bibDiv);
+                }
+                bibDiv.innerHTML = '<h2>References</h2>' + bibliography;
+
+                // Add anchors to bibliography entries
+                bibDiv.querySelectorAll('.csl-entry').forEach(entry => {
+                    const key = entry.getAttribute('data-csl-entry-id');
+                    if (key) entry.setAttribute('id', 'ref-' + key);
+                });
+            });
+        </script>
+    `;
 
     // Format date
     let formattedDate = "Publish Date";
@@ -230,6 +247,11 @@ function generateArticleHTML(isPreview = false) {
             img { max-width: 100%; height: auto; border-radius: 8px; margin-top: 20px; }
             iframe { width: 100%; aspect-ratio: 16/9; border: none; border-radius: 8px; margin-top: 20px; }
             blockquote { border-left: 4px solid #ccc; padding-left: 15px; font-style: italic; margin: 20px 0; }
+            
+            .citation { font-size: 0.85em; vertical-align: super; font-weight: bold; }
+            .citation a { text-decoration: none; color: inherit; }
+            #bibliography { margin-top: 50px; border-top: 1px solid #ccc; padding-top: 20px; }
+            .csl-entry { margin-bottom: 10px; font-size: 0.9rem; }
         </style>
 	</head>
 	<body>
@@ -245,6 +267,10 @@ function generateArticleHTML(isPreview = false) {
                     ${content}
                 </div>
             </div>
+
+            <!-- BibTeX Data -->
+            <script id="references-bibtex" type="application/x-bibtex">${bibtex}</script>
+            ${CITATION_INIT_SCRIPT}
 
             <!-- Home Page Link -->
             <div class="home">

@@ -253,3 +253,36 @@ pre {
 .copy-btn:hover, .button-group .secondary-btn:hover {
     background: #484f58;
 }
+
+.citation {
+    background: rgba(88, 166, 255, 0.1);
+    border: 1px dashed var(--accent-color);
+    border-radius: 4px;
+    padding: 0 4px;
+    cursor: pointer;
+    color: var(--accent-color);
+    font-size: 0.9em;
+}
+
+.citation:hover {
+    background: rgba(88, 166, 255, 0.2);
+}
+
+#bibliography {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+    color: #8b949e;
+}
+
+#bibliography h2 {
+    font-size: 1.2rem;
+    color: var(--accent-color);
+    margin-bottom: 16px;
+}
+
+.csl-entry {
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
