@@ -310,6 +310,34 @@ pre {
     box-shadow: 0 10px 40px rgba(0,0,0,0.5);
 }
 
+.modal-content h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.4rem;
+    color: var(--accent-color);
+}
+
+.search-group {
+    margin-bottom: 16px;
+}
+
+#cite-search {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px;
+    color: white;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+}
+
+#cite-search:focus {
+    outline: none;
+    border-color: var(--accent-color);
+}
+
 .cite-list {
     margin: 20px 0;
     max-height: 300px;

@@ -50,19 +50,29 @@ const quill = new Quill('#editor-container', {
 // Citation Modal Logic
 const citeModal = document.getElementById('cite-modal');
 const citeList = document.getElementById('cite-list');
+const citeSearch = document.getElementById('cite-search');
 const closeCiteBtn = document.getElementById('close-cite-modal');
 const bibtexTextarea = document.getElementById('bibtex');
 let currentRange = null;
+let allCiteKeys = [];
 
 function showCiteModal(range) {
     currentRange = range;
     const bibtex = bibtexTextarea.value;
-    const keys = extractBibtexKeys(bibtex);
+    allCiteKeys = extractBibtexKeys(bibtex);
     
+    citeSearch.value = '';
+    renderCiteList(allCiteKeys);
+    
+    citeModal.classList.remove('hidden');
+    setTimeout(() => citeSearch.focus(), 50); // Small delay to ensure focus on visible element
+}
+
+function renderCiteList(keys) {
     citeList.innerHTML = '';
     
     if (keys.length === 0) {
-        citeList.innerHTML = '<div class="cite-empty">No BibTeX keys found. Add them to the "References" field first.</div>';
+        citeList.innerHTML = `<div class="cite-empty">${allCiteKeys.length === 0 ? 'No BibTeX keys found.' : 'No matches found.'}</div>`;
     } else {
         keys.forEach(key => {
             const item = document.createElement('div');
@@ -71,27 +81,34 @@ function showCiteModal(range) {
             item.onclick = () => {
                 quill.focus();
                 if (currentRange.length === 0) {
-                    // Insert the key with citation format
                     quill.insertText(currentRange.index, key, 'citation', key);
-                    // Insert a space without the citation format
                     quill.insertText(currentRange.index + key.length, ' ', 'citation', false);
-                    // Place cursor after the space
                     quill.setSelection(currentRange.index + key.length + 1);
                 } else {
                     quill.formatText(currentRange.index, currentRange.length, 'citation', key);
                     quill.setSelection(currentRange.index + currentRange.length);
                 }
-                
-                // Explicitly tell Quill to stop applying the citation format
                 quill.format('citation', false);
                 hideCiteModal();
             };
             citeList.appendChild(item);
         });
     }
-    
-    citeModal.classList.remove('hidden');
 }
+
+citeSearch.oninput = (e) => {
+    const query = e.target.value.toLowerCase();
+    const filtered = allCiteKeys.filter(key => key.toLowerCase().includes(query));
+    renderCiteList(filtered);
+};
+
+// Selection via Enter key
+citeSearch.onkeydown = (e) => {
+    if (e.key === 'Enter') {
+        const firstItem = citeList.querySelector('.cite-item');
+        if (firstItem) firstItem.click();
+    }
+};
 
 function hideCiteModal() {
     citeModal.classList.add('hidden');
@@ -105,7 +122,7 @@ function extractBibtexKeys(bibtex) {
     while ((match = regex.exec(bibtex)) !== null) {
         keys.push(match[1].trim());
     }
-    return [...new Set(keys)]; // Unique keys
+    return [...new Set(keys)].sort(); // Unique and sorted
 }
 
 closeCiteBtn.onclick = hideCiteModal;
