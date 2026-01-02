@@ -230,7 +230,19 @@ function generateArticleHTML(isPreview = false) {
                 const Cite = (typeof require === 'function') ? require('citation-js') : window.citation.Cite;
                 if (!bibtex || !Cite) return;
 
-                const cite = new Cite(bibtex);
+                const fullCite = new Cite(bibtex);
+                
+                // Collect all used citation keys from the document
+                const usedKeys = new Set();
+                document.querySelectorAll('.citation').forEach(span => {
+                    usedKeys.add(span.getAttribute('data-cite'));
+                });
+
+                // Filter entries to only those that were cited
+                const citedData = fullCite.data.filter(entry => usedKeys.has(entry.id));
+                if (citedData.length === 0) return;
+
+                const cite = new Cite(citedData);
 
                 // Process citations
                 document.querySelectorAll('.citation').forEach(span => {
