@@ -359,7 +359,7 @@ pre {
     color: #58a6ff;
 }
 
-.cite-item:hover {
+.cite-item:hover, .cite-item.active {
     background: rgba(88, 166, 255, 0.1);
     border-color: var(--accent-color);
 }

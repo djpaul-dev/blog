@@ -55,17 +55,21 @@ const closeCiteBtn = document.getElementById('close-cite-modal');
 const bibtexTextarea = document.getElementById('bibtex');
 let currentRange = null;
 let allCiteKeys = [];
+let filteredKeys = [];
+let selectedIndex = 0;
 
 function showCiteModal(range) {
     currentRange = range;
     const bibtex = bibtexTextarea.value;
     allCiteKeys = extractBibtexKeys(bibtex);
+    filteredKeys = allCiteKeys;
+    selectedIndex = 0;
     
     citeSearch.value = '';
-    renderCiteList(allCiteKeys);
+    renderCiteList(filteredKeys);
     
     citeModal.classList.remove('hidden');
-    setTimeout(() => citeSearch.focus(), 50); // Small delay to ensure focus on visible element
+    setTimeout(() => citeSearch.focus(), 50);
 }
 
 function renderCiteList(keys) {
@@ -74,39 +78,58 @@ function renderCiteList(keys) {
     if (keys.length === 0) {
         citeList.innerHTML = `<div class="cite-empty">${allCiteKeys.length === 0 ? 'No BibTeX keys found.' : 'No matches found.'}</div>`;
     } else {
-        keys.forEach(key => {
+        keys.forEach((key, index) => {
             const item = document.createElement('div');
-            item.className = 'cite-item';
+            item.className = 'cite-item' + (index === selectedIndex ? ' active' : '');
             item.textContent = key;
-            item.onclick = () => {
-                quill.focus();
-                if (currentRange.length === 0) {
-                    quill.insertText(currentRange.index, key, 'citation', key);
-                    quill.insertText(currentRange.index + key.length, ' ', 'citation', false);
-                    quill.setSelection(currentRange.index + key.length + 1);
-                } else {
-                    quill.formatText(currentRange.index, currentRange.length, 'citation', key);
-                    quill.setSelection(currentRange.index + currentRange.length);
-                }
-                quill.format('citation', false);
-                hideCiteModal();
-            };
+            item.onclick = () => selectKey(key);
             citeList.appendChild(item);
+            
+            // Scroll selected item into view if needed
+            if (index === selectedIndex) {
+                item.scrollIntoView({ block: 'nearest' });
+            }
         });
     }
 }
 
+function selectKey(key) {
+    quill.focus();
+    if (currentRange.length === 0) {
+        quill.insertText(currentRange.index, key, 'citation', key);
+        quill.insertText(currentRange.index + key.length, ' ', 'citation', false);
+        quill.setSelection(currentRange.index + key.length + 1);
+    } else {
+        quill.formatText(currentRange.index, currentRange.length, 'citation', key);
+        quill.setSelection(currentRange.index + currentRange.length);
+    }
+    quill.format('citation', false);
+    hideCiteModal();
+}
+
 citeSearch.oninput = (e) => {
     const query = e.target.value.toLowerCase();
-    const filtered = allCiteKeys.filter(key => key.toLowerCase().includes(query));
-    renderCiteList(filtered);
+    filteredKeys = allCiteKeys.filter(key => key.toLowerCase().includes(query));
+    selectedIndex = 0;
+    renderCiteList(filteredKeys);
 };
 
-// Selection via Enter key
 citeSearch.onkeydown = (e) => {
-    if (e.key === 'Enter') {
-        const firstItem = citeList.querySelector('.cite-item');
-        if (firstItem) firstItem.click();
+    if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        selectedIndex = (selectedIndex + 1) % filteredKeys.length;
+        renderCiteList(filteredKeys);
+    } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        selectedIndex = (selectedIndex - 1 + filteredKeys.length) % filteredKeys.length;
+        renderCiteList(filteredKeys);
+    } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (filteredKeys[selectedIndex]) {
+            selectKey(filteredKeys[selectedIndex]);
+        }
+    } else if (e.key === 'Escape') {
+        hideCiteModal();
     }
 };
 
