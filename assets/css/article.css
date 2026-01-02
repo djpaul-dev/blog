@@ -105,8 +105,6 @@ body {
 /* CITATIONS **********************************************************************************************************/
 
 .citation {
-    font-size: 0.85em;
-    vertical-align: super;
     text-decoration: none;
     font-weight: bold;
     color: var(--light_text);

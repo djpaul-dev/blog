@@ -196,7 +196,7 @@ button#generate-btn:hover {
 }
 
 .hidden {
-    display: none;
+    display: none !important;
 }
 
 #output-section {
@@ -261,7 +261,6 @@ pre {
     padding: 0 4px;
     cursor: pointer;
     color: var(--accent-color);
-    font-size: 0.9em;
 }
 
 .citation:hover {
@@ -285,4 +284,66 @@ pre {
     margin-bottom: 12px;
     font-size: 0.95rem;
     line-height: 1.5;
+}
+
+/* Modal Styles */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: #161b22;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 30px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+}
+
+.cite-list {
+    margin: 20px 0;
+    max-height: 300px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.cite-item {
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Consolas', monospace;
+    font-size: 0.9rem;
+    color: #58a6ff;
+}
+
+.cite-item:hover {
+    background: rgba(88, 166, 255, 0.1);
+    border-color: var(--accent-color);
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.cite-empty {
+    color: #8b949e;
+    font-style: italic;
+    text-align: center;
+    padding: 20px;
 }

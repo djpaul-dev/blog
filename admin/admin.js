@@ -39,16 +39,79 @@ const quill = new Quill('#editor-container', {
                 'cite': function () {
                     const range = this.quill.getSelection();
                     if (range) {
-                        const key = prompt("Enter BibTeX Citation Key:");
-                        if (key) {
-                            this.quill.formatText(range.index, range.length, 'citation', key);
-                        }
+                        showCiteModal(range);
                     }
                 }
             }
         }
     }
 });
+
+// Citation Modal Logic
+const citeModal = document.getElementById('cite-modal');
+const citeList = document.getElementById('cite-list');
+const closeCiteBtn = document.getElementById('close-cite-modal');
+const bibtexTextarea = document.getElementById('bibtex');
+let currentRange = null;
+
+function showCiteModal(range) {
+    currentRange = range;
+    const bibtex = bibtexTextarea.value;
+    const keys = extractBibtexKeys(bibtex);
+    
+    citeList.innerHTML = '';
+    
+    if (keys.length === 0) {
+        citeList.innerHTML = '<div class="cite-empty">No BibTeX keys found. Add them to the "References" field first.</div>';
+    } else {
+        keys.forEach(key => {
+            const item = document.createElement('div');
+            item.className = 'cite-item';
+            item.textContent = key;
+            item.onclick = () => {
+                quill.focus();
+                if (currentRange.length === 0) {
+                    // Insert the key with citation format
+                    quill.insertText(currentRange.index, key, 'citation', key);
+                    // Insert a space without the citation format
+                    quill.insertText(currentRange.index + key.length, ' ', 'citation', false);
+                    // Place cursor after the space
+                    quill.setSelection(currentRange.index + key.length + 1);
+                } else {
+                    quill.formatText(currentRange.index, currentRange.length, 'citation', key);
+                    quill.setSelection(currentRange.index + currentRange.length);
+                }
+                
+                // Explicitly tell Quill to stop applying the citation format
+                quill.format('citation', false);
+                hideCiteModal();
+            };
+            citeList.appendChild(item);
+        });
+    }
+    
+    citeModal.classList.remove('hidden');
+}
+
+function hideCiteModal() {
+    citeModal.classList.add('hidden');
+    currentRange = null;
+}
+
+function extractBibtexKeys(bibtex) {
+    const keys = [];
+    const regex = /@\w+\s*{\s*([^,]+)/g;
+    let match;
+    while ((match = regex.exec(bibtex)) !== null) {
+        keys.push(match[1].trim());
+    }
+    return [...new Set(keys)]; // Unique keys
+}
+
+closeCiteBtn.onclick = hideCiteModal;
+window.onclick = (event) => {
+    if (event.target == citeModal) hideCiteModal();
+};
 
 // Add custom icon for Cite button
 const citeIcon = '<svg viewBox="0 0 18 18"><path class="ql-stroke" d="M11,4c-2.2,0-4,1.8-4,4s1.8,4,4,4s4-1.8,4-4S13.2,4,11,4z M11,10c-1.1,0-2-0.9-2-2s0.9-2,2-2s2,0.9,2,2S12.1,10,11,10z"/><path class="ql-fill" d="M5,14H3v-2h2V14z M8,14H6v-2h2V14z M11,14H9v-2h2V14z M14,14h-2v-2h2V14z"/></svg>';
@@ -157,7 +220,7 @@ function generateArticleHTML(isPreview = false) {
                     const key = span.getAttribute('data-cite');
                     const ref = cite.data.find(entry => entry.id === key);
                     if (!ref) {
-                        span.innerHTML = '<span style="color: red;">[Ref: ' + key + ' not found]</span>';
+                        span.innerHTML = '<span class="citation-error">' + key + '</span>';
                         return;
                     }
                     const singleCite = new Cite(ref);
@@ -166,7 +229,7 @@ function generateArticleHTML(isPreview = false) {
                         template: 'apa',
                         lang: 'en-US'
                     });
-                    span.innerHTML = '<a href="#ref-' + key + '">' + citation + '</a>';
+                    span.innerHTML = '<a href="#ref-' + key + '">' + citation.trim() + '</a>';
                 });
 
                 // Add bibliography
@@ -248,8 +311,9 @@ function generateArticleHTML(isPreview = false) {
             iframe { width: 100%; aspect-ratio: 16/9; border: none; border-radius: 8px; margin-top: 20px; }
             blockquote { border-left: 4px solid #ccc; padding-left: 15px; font-style: italic; margin: 20px 0; }
             
-            .citation { font-size: 0.85em; vertical-align: super; font-weight: bold; }
+            .citation { font-weight: bold; }
             .citation a { text-decoration: none; color: inherit; }
+            .citation-error { color: #f85149; text-decoration: underline wavy; cursor: help; }
             #bibliography { margin-top: 50px; border-top: 1px solid #ccc; padding-top: 20px; }
             .csl-entry { margin-bottom: 10px; font-size: 0.9rem; }
         </style>
