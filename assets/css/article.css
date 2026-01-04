@@ -132,3 +132,39 @@ body {
     font-size: 0.9rem;
     line-height: 1.4;
 }
+
+/* FIGURES & CAPTIONS *************************************************************************************************/
+/* FIGURES & CAPTIONS *************************************************************************************************/
+figure {
+    display: table;
+    margin: 2rem auto;
+    max-width: 100%;
+}
+
+figure.ql-align-left {
+    float: left;
+    margin: 1rem 2rem 1rem 0;
+    max-width: 60%;
+}
+
+figure.ql-align-right {
+    float: right;
+    margin: 1rem 0 1rem 2rem;
+    max-width: 60%;
+}
+
+figure.ql-align-center {
+    margin: 2rem auto;
+    float: none;
+}
+
+figcaption {
+    display: table-caption;
+    caption-side: bottom;
+    color: var(--light_text);
+    font-family: "Josefin Sans", sans-serif;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    font-style: italic;
+    text-align: center;
+}

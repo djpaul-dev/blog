@@ -80,6 +80,105 @@ header p {
 
 .ql-editor img {
     cursor: nwse-resize;
+    max-width: 100%;
+}
+
+figure {
+    display: table;
+    margin: 20px auto;
+    max-width: 100%;
+    text-align: center;
+    border: 1px solid rgba(88, 166, 255, 0.2); 
+    padding: 10px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+figure.ql-align-left {
+    float: left;
+    margin: 10px 20px 10px 0;
+    max-width: 60%;
+}
+
+figure.ql-align-right {
+    float: right;
+    margin: 10px 0 10px 20px;
+    max-width: 60%;
+}
+
+figure.ql-align-center {
+    margin: 20px auto;
+    float: none;
+}
+
+figure iframe {
+    width: 100%;
+    aspect-ratio: 16/9;
+}
+
+.video-wrapper {
+    position: relative;
+    display: inline-block; /* Shrinks to fit the driver image */
+    max-width: 100%;
+    vertical-align: top;
+}
+
+.video-driver {
+    display: block;
+    /* width: 100%;  <-- Removed to allow inline style from resizer to win */
+    height: auto;
+    /* Default starting size if none set */
+    min-width: 300px;
+    aspect-ratio: 16/9; 
+    cursor: pointer;
+    background: transparent;
+}
+
+.video-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1; /* Behind the driver */
+    border-radius: 8px; /* Optional: Keep consistent with other images */
+    pointer-events: none; /* Let clicks pass through to driver if needed/desired? No, driver covers it? Driver is transparent. */
+    /* Wait, if driver is transparent image on TOP, then driver captures clicks. */
+}
+
+figcaption {
+    display: table-caption;
+    caption-side: bottom;
+    color: #c9d1d9;
+    font-size: 1rem;
+    padding: 15px;
+    text-align: center;
+    border: 3px dashed var(--accent-color);
+    background: rgba(88, 166, 255, 0.1);
+    border-radius: 8px;
+    margin-top: 15px;
+    min-height: 4em; 
+    cursor: text;
+    pointer-events: auto !important;
+    transition: all 0.3s ease;
+}
+
+figcaption:focus {
+    outline: none;
+    border: 3px solid var(--accent-color);
+    background: rgba(88, 166, 255, 0.2);
+    box-shadow: 0 0 25px rgba(88, 166, 255, 0.5);
+    color: #ffffff;
+}
+
+figcaption:empty:before {
+    content: "CLICK HERE TO TYPE CAPTION...";
+    color: var(--accent-color);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 800;
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+    pointer-events: none;
 }
 
 .input-group {

@@ -1,6 +1,180 @@
 // Register Resize Module
 Quill.register('modules/blotFormatter', QuillBlotFormatter.default);
 
+// Custom Figure Module (Image with Caption)
+const BlockEmbed = Quill.import('blots/block/embed');
+
+class FigureBlot extends BlockEmbed {
+    static create(value) {
+        let node = super.create();
+        node.setAttribute('contenteditable', 'false');
+        
+        const isVideo = value.type === 'video';
+        let media; // This will vary, but for video it's the wrapper for the figure to hold. 
+                   // BUT for blotFormatter, we want to return the "driver" image so it attaches there?
+                   // Actually FigureBlot returns the 'node' (figure). 
+                   // BlotFormatter finds the image inside the figure?
+                   // No, BlotFormatter works on the element you click.
+        
+        let driver = null; 
+
+        if (isVideo) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'video-wrapper';
+            
+            // Driver: Transparent Image that holds dimensions and receives clicks
+            driver = document.createElement('img');
+            driver.className = 'video-driver';
+            driver.setAttribute('src', 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCI+PC9zdmc+');
+            
+            const iframe = document.createElement('iframe');
+            iframe.setAttribute('src', value.url);
+            iframe.setAttribute('frameborder', '0');
+            iframe.setAttribute('allowfullscreen', 'true');
+            
+            wrapper.appendChild(driver);
+            wrapper.appendChild(iframe);
+            media = wrapper;
+        } else {
+            media = document.createElement('img');
+            media.setAttribute('src', value.url);
+            driver = media; // The image itself is the driver
+        }
+        media.setAttribute('contenteditable', 'false'); // Wrapper shouldn't be editable
+        if (driver !== media) driver.setAttribute('contenteditable', 'false');
+
+        // Restore attributes to the DRIVER (the thing getting resized)
+        if (value.width) driver.setAttribute('width', value.width);
+        if (value.height) driver.setAttribute('height', value.height);
+        if (value.style) driver.setAttribute('style', value.style);
+        
+        // Also apply to iframe directly during creation for video
+        if (isVideo) {
+            const iframe = media.querySelector('iframe');
+            if (iframe) {
+                if (value.width) iframe.setAttribute('width', value.width);
+                if (value.height) iframe.setAttribute('height', value.height);
+                if (value.style) iframe.setAttribute('style', value.style);
+            }
+        }
+        
+        const figcaption = document.createElement('figcaption');
+        figcaption.setAttribute('contenteditable', 'true');
+        figcaption.innerText = value.caption || '';
+        
+        // Prevent Quill from hijacking clicks inside the caption
+        figcaption.addEventListener('mousedown', (e) => e.stopPropagation());
+
+        node.appendChild(media);
+        node.appendChild(figcaption);
+
+        // Observer to sync inner image alignment (from resize/overlay tools) to outer figure
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                // Check for alignment/style changes on driver
+                const target = driver; 
+                const s = target.style;
+                const parent = node; // The figure element
+
+                // Sync size/style to iframe for persistence
+                if (isVideo) {
+                    const iframe = media.querySelector('iframe');
+                    if (iframe) {
+                        if (s.width) iframe.style.width = s.width;
+                        if (s.height) iframe.style.height = s.height;
+                        // Do NOT copy full cssText as it overwrites position: absolute from CSS class
+                        if (target.hasAttribute('width')) iframe.setAttribute('width', target.getAttribute('width'));
+                        if (target.hasAttribute('height')) iframe.setAttribute('height', target.getAttribute('height'));
+                    }
+                }
+
+                if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                    // Check for alignment signals from overlay tools
+                    if (s.float === 'left') {
+                        s.float = ''; // Remove inline float
+                        parent.classList.remove('ql-align-center', 'ql-align-right');
+                        parent.classList.add('ql-align-left');
+                        parent.setAttribute('data-align', 'left');
+                        requestAnimationFrame(() => {
+                             if (window.quill) window.quill.getModule('blotFormatter').update();
+                        });
+                    } else if (s.float === 'right') {
+                        s.float = ''; 
+                        parent.classList.remove('ql-align-center', 'ql-align-left');
+                        parent.classList.add('ql-align-right');
+                        parent.setAttribute('data-align', 'right');
+                        requestAnimationFrame(() => {
+                             if (window.quill) window.quill.getModule('blotFormatter').update();
+                        });
+                    } else if (s.margin === 'auto' || s.display === 'block') {
+                         // Often used for center
+                        if (s.marginLeft === 'auto' && s.marginRight === 'auto') {
+                            s.marginLeft = '';
+                            s.marginRight = '';
+                            s.display = ''; 
+                            parent.classList.remove('ql-align-left', 'ql-align-right');
+                            parent.classList.add('ql-align-center');
+                            parent.setAttribute('data-align', 'center');
+                            requestAnimationFrame(() => {
+                                 if (window.quill) window.quill.getModule('blotFormatter').update();
+                            });
+                        }
+                    }
+                }
+            });
+        });
+        
+        // Observe the driver (image or transparent image)
+        // Must watch 'width' and 'height' attributes because blotFormatter might toggle them
+        observer.observe(driver, { attributes: true, attributeFilter: ['style', 'width', 'height'] });
+
+        return node;
+    }
+
+    static value(node) {
+        const img = node.querySelector('img:not(.video-driver)');
+        const iframe = node.querySelector('iframe');
+        const figcaption = node.querySelector('figcaption');
+        
+        let url = '';
+        if (iframe) {
+             url = iframe.getAttribute('src');
+        } else if (img) {
+             url = img.getAttribute('src');
+        }
+
+        // Return dimensions from the iframe if it exists, otherwise the image
+        const target = iframe || img; 
+
+        return {
+            url: url,
+            type: iframe ? 'video' : 'image',
+            caption: figcaption ? figcaption.innerText : '',
+            width: target ? target.getAttribute('width') : null,
+            height: target ? target.getAttribute('height') : null,
+            style: target ? target.getAttribute('style') : null
+        };
+    }
+
+    format(name, value) {
+        if (name === 'align') {
+            // Remove existing alignment classes
+            this.domNode.classList.remove('ql-align-left', 'ql-align-center', 'ql-align-right');
+            if (value) {
+                this.domNode.setAttribute('data-align', value);
+                this.domNode.classList.add(`ql-align-${value}`);
+            } else {
+                this.domNode.removeAttribute('data-align');
+            }
+        } else {
+            super.format(name, value);
+        }
+    }
+}
+FigureBlot.blotName = 'figure';
+FigureBlot.tagName = 'figure';
+Quill.register(FigureBlot);
+
 // Custom Cite Module for Quill
 const Inline = Quill.import('blots/inline');
 class CitationBlot extends Inline {
@@ -31,8 +205,9 @@ const quill = new Quill('#editor-container', {
                 ['bold', 'italic', 'underline'],
                 ['link', 'blockquote', 'code-block'],
                 [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                [{ 'align': [] }],
                 ['image', 'video'],
-                ['cite'], // Added Cite button
+                ['cite', 'figure'], // Added Cite and Figure buttons
                 ['clean']
             ],
             handlers: {
@@ -41,11 +216,107 @@ const quill = new Quill('#editor-container', {
                     if (range) {
                         showCiteModal(range);
                     }
+                },
+                'figure': function() {
+                    const range = this.quill.getSelection(true);
+                    if (!range) return;
+
+                    try {
+                        let targetBlot = null;
+                        
+                        const isMedia = (blot) => {
+                            if (!blot || !blot.domNode) return false;
+                            const tag = (blot.domNode.tagName || "").toUpperCase();
+                            return tag === 'IMG' || tag === 'IFRAME';
+                        };
+
+                        // helper to check index
+                        const checkIdx = (idx) => {
+                            if (idx < 0) return null;
+                            const [leaf] = this.quill.getLeaf(idx);
+                            if (isMedia(leaf)) return leaf;
+                            
+                            // Fallback: Check if the leaf's parent or children matches
+                            // (Useful if blotFormatter has wrapped the node)
+                            if (leaf && leaf.domNode) {
+                                if (isMedia({domNode: leaf.domNode})) return leaf;
+                                // Deep check - only if it's an Element node
+                                if (leaf.domNode.nodeType === 1) { 
+                                    const img = leaf.domNode.querySelector('img, iframe');
+                                    if (img) return { domNode: img, ...leaf };
+                                }
+                            }
+                            return null;
+                        };
+
+                        // 1. Check surrounding indices
+                        targetBlot = checkIdx(range.index) || checkIdx(range.index - 1) || checkIdx(range.index + 1);
+
+                        // 2. Scan selection range
+                        if (!targetBlot && range.length > 0) {
+                            for (let i = 0; i <= range.length; i++) {
+                                const l = checkIdx(range.index + i);
+                                if (l) {
+                                    targetBlot = l;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (targetBlot) {
+                            const dom = targetBlot.domNode;
+                            const url = dom.getAttribute('src');
+                            const type = dom.tagName.toUpperCase() === 'IFRAME' ? 'video' : 'image';
+                            const index = this.quill.getIndex(targetBlot);
+
+                            console.log("Figure: Found media", type, "at", index);
+
+                            // Perform the swap
+                            this.quill.deleteText(index, 1);
+                            this.quill.insertEmbed(index, 'figure', {
+                                url: url,
+                                type: type,
+                                caption: ''
+                            });
+
+                            // Select the caption
+                            setTimeout(() => {
+                                let figHtml = this.quill.root.querySelectorAll('figure');
+                                let targetFig = null;
+                                for (let fig of figHtml) {
+                                    let blot = Quill.find(fig);
+                                    if (blot && this.quill.getIndex(blot) >= index - 2) {
+                                        targetFig = fig;
+                                        break;
+                                    }
+                                }
+
+                                if (targetFig) {
+                                    const caption = targetFig.querySelector('figcaption');
+                                    if (caption) {
+                                        caption.focus();
+                                        const r = document.createRange();
+                                        const s = window.getSelection();
+                                        r.selectNodeContents(caption);
+                                        r.collapse(false);
+                                        s.removeAllRanges();
+                                        s.addRange(r);
+                                    }
+                                }
+                            }, 150);
+                        } else {
+                            alert("Please click ON the image or video first, then click the toolbar button.");
+                        }
+                    } catch (err) {
+                        console.error("Figure Error:", err);
+                        alert("Error: " + err.message);
+                    }
                 }
             }
         }
     }
 });
+window.quill = quill; // Make globally accessible for helpers
 
 // Citation Modal Logic
 const citeModal = document.getElementById('cite-modal');
@@ -158,6 +429,14 @@ const citeIcon = '<svg viewBox="0 0 18 18"><path class="ql-stroke" d="M11,4c-2.2
 const citeBtn = document.querySelector('.ql-cite');
 if (citeBtn) citeBtn.innerHTML = citeIcon;
 
+// Add custom icon for Figure button
+const figureIcon = '<svg viewBox="0 0 18 18"><rect class="ql-stroke" height="10" width="12" x="3" y="4"></rect><line class="ql-stroke" x1="5" x2="13" y1="11" y2="11"></line><line class="ql-stroke" x1="5" x2="10" y1="8" y2="8"></line></svg>';
+// Small delay to ensure toolbar is rendered
+setTimeout(() => {
+    const figureBtn = document.querySelector('.ql-figure');
+    if (figureBtn) figureBtn.innerHTML = figureIcon;
+}, 100);
+
 const postForm = document.getElementById('post-form');
 const outputSection = document.getElementById('output-section');
 const previewBtn = document.getElementById('preview-btn');
@@ -242,7 +521,13 @@ function generateArticleHTML(isPreview = false) {
     const dateInput = document.getElementById('date').value;
     const description = document.getElementById('description').value || "Short description...";
     const bibtex = document.getElementById('bibtex').value || "";
-    const content = quill.root.innerHTML;
+    let content = quill.root.innerHTML;
+
+    // Post-process HTML to remove editor-only artifacts
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(content, 'text/html');
+    doc.querySelectorAll('.video-driver').forEach(el => el.remove());
+    content = doc.body.innerHTML;
 
     // Formatting Citations Script
     const CITATION_INIT_SCRIPT = `
