@@ -206,7 +206,7 @@ const quill = new Quill('#editor-container', {
                 ['link', 'blockquote', 'code-block'],
                 [{ 'list': 'ordered' }, { 'list': 'bullet' }],
                 [{ 'align': [] }],
-                ['image', 'video'],
+                ['image', 'video', 'formula'],
                 ['cite', 'figure'], // Added Cite and Figure buttons
                 ['clean']
             ],
@@ -311,12 +311,39 @@ const quill = new Quill('#editor-container', {
                         console.error("Figure Error:", err);
                         alert("Error: " + err.message);
                     }
+                },
+                'formula': function() {
+                    const range = this.quill.getSelection(true);
+                    if (range) {
+                        const equation = prompt('Enter LaTeX equation:', '');
+                        if (equation) {
+                            this.quill.insertEmbed(range.index, 'formula', equation, Quill.sources.USER);
+                            this.quill.setSelection(range.index + 1, Quill.sources.SILENT);
+                        }
+                    }
                 }
             }
         }
     }
 });
 window.quill = quill; // Make globally accessible for helpers
+
+// Click to edit formula
+quill.root.addEventListener('click', (e) => {
+    const formula = e.target.closest('.ql-formula');
+    if (formula) {
+        const blot = Quill.find(formula);
+        if (blot) {
+            const index = quill.getIndex(blot);
+            const currentValue = formula.getAttribute('data-value') || '';
+            const newValue = prompt('Edit LaTeX equation:', currentValue);
+            if (newValue !== null && newValue !== currentValue) {
+                quill.deleteText(index, 1);
+                quill.insertEmbed(index, 'formula', newValue);
+            }
+        }
+    }
+});
 
 // Citation Modal Logic
 const citeModal = document.getElementById('cite-modal');
@@ -630,6 +657,22 @@ function generateArticleHTML(isPreview = false) {
         ${isPreview ? `<style>${ARTICLE_CSS_CONTENT}</style>` : '<link rel="stylesheet" href="../assets/css/article.css" />'}
 		<link rel="icon" type="image/x-icon" href="../assets/images/tab_icon.png">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        
+        <!-- KaTeX support -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false}
+                    ],
+                    throwOnError : false
+                });
+            });
+        </script>
         
         <style>
             /* Built-in Styles for RTF Content consistency */
