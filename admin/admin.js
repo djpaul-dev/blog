@@ -328,6 +328,51 @@ const quill = new Quill('#editor-container', {
 });
 window.quill = quill; // Make globally accessible for helpers
 
+// Toolbar Tooltips
+const TOOLBAR_TOOLTIPS = {
+    '.ql-header[value="1"]': 'Heading 1',
+    '.ql-header[value="2"]': 'Heading 2',
+    '.ql-header[value="3"]': 'Heading 3',
+    '.ql-header:not([value])': 'Normal Text',
+    '.ql-bold': 'Bold',
+    '.ql-italic': 'Italic',
+    '.ql-underline': 'Underline',
+    '.ql-link': 'Insert Link',
+    '.ql-blockquote': 'Blockquote',
+    '.ql-code-block': 'Code Block',
+    '.ql-list[value="ordered"]': 'Numbered List',
+    '.ql-list[value="bullet"]': 'Bullet List',
+    '.ql-align': 'Alignment',
+    '.ql-image': 'Insert Image',
+    '.ql-video': 'Insert Video',
+    '.ql-formula': 'Insert/Edit Math Equation',
+    '.ql-cite': 'Insert Citation',
+    '.ql-figure': 'Convert Media to Figured Caption',
+    '.ql-clean': 'Clear Formatting'
+};
+
+function initToolbarTooltips() {
+    for (const selector in TOOLBAR_TOOLTIPS) {
+        const elements = document.querySelectorAll(`.ql-toolbar ${selector}`);
+        elements.forEach(el => {
+            el.setAttribute('title', TOOLBAR_TOOLTIPS[selector]);
+        });
+    }
+    
+    // Also handle dropdown labels (Headers/Align)
+    const pickers = document.querySelectorAll('.ql-toolbar .ql-picker');
+    pickers.forEach(picker => {
+        if (picker.classList.contains('ql-header')) {
+            picker.setAttribute('title', 'Text Style');
+        } else if (picker.classList.contains('ql-align')) {
+            picker.setAttribute('title', 'Alignment');
+        }
+    });
+}
+
+// Small delay to ensure toolbar is fully rendered
+setTimeout(initToolbarTooltips, 200);
+
 // Click to edit formula
 quill.root.addEventListener('click', (e) => {
     const formula = e.target.closest('.ql-formula');
