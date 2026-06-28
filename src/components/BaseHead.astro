@@ -1,0 +1,46 @@
+---
+// Centralized <head>: meta tags, analytics, favicon, fonts.
+// Everything that used to be copy-pasted into every .html file lives here once.
+interface Props {
+  title: string;
+  description?: string;
+  keywords?: string[];
+  /** Path to the page-specific stylesheet, e.g. "/assets/css/article.css" */
+  stylesheet: string;
+  /** Canonical URL override; defaults to the current page URL. */
+  canonical?: string;
+}
+
+const {
+  title,
+  description = 'Personal Blog of Dhruba Jyoti Paul (DJ-PAUL). Bitstream.',
+  keywords = [],
+  stylesheet,
+  canonical,
+} = Astro.props;
+
+const canonicalURL = canonical ?? new URL(Astro.url.pathname, Astro.site).href;
+---
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-H63S8PZ4SB"></script>
+<script is:inline>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  gtag('js', new Date());
+  gtag('config', 'G-H63S8PZ4SB');
+</script>
+
+<!-- Standard Header Tags -->
+<title>{title}</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+<meta name="author" content="Dhruba Jyoti Paul" />
+{keywords.length > 0 && <meta name="keywords" content={keywords.join(', ')} />}
+<meta name="description" content={description} />
+
+<!-- Links -->
+<link rel="canonical" href={canonicalURL} />
+<link rel="stylesheet" href={stylesheet} />
+<link rel="icon" type="image/x-icon" href="/assets/images/tab_icon.png" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+<link rel="alternate" type="application/rss+xml" title="DJ's Bitstream" href="/rss.xml" />

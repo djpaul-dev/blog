@@ -1,0 +1,57 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title: string;
+  date: Date;
+  description: string;
+  keywords?: string[];
+}
+
+const { title, date, description, keywords } = Astro.props;
+
+const formattedDate = date.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+  timeZone: 'UTC',
+});
+const isoDate = date.toISOString().split('T')[0];
+---
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <BaseHead
+      title={`BITSTREAM - ${title}`}
+      description={description}
+      keywords={keywords}
+      stylesheet="/assets/css/article.css"
+    />
+  </head>
+  <body>
+    <div id="main">
+      <!-- Back Button -->
+      <span class="previous">&#8592; <a class="previous_button" href="/">Back</a></span>
+
+      <!-- CONTENT -->
+      <div id="content" itemscope itemtype="http://schema.org/Article">
+        <h1><span itemprop="name">{title}</span></h1>
+        <h5 id="citation">
+          By <span itemprop="author">Dhruba Jyoti Paul</span> |
+          <time itemprop="datePublished" datetime={isoDate}>{formattedDate}</time>
+        </h5>
+        <div itemprop="articleBody">
+          <slot />
+        </div>
+      </div>
+
+      <!-- Home Page Link -->
+      <div class="home">
+        <a href="/">DJ's BITSTREAM</a>
+      </div>
+
+      <Footer />
+    </div>
+  </body>
+</html>

@@ -1,0 +1,52 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+
+// The post list is generated from the collection — no manual snippets.
+// Drafts are hidden in production builds but visible in `astro dev`.
+const posts = (await getCollection('posts', ({ data }) =>
+  import.meta.env.PROD ? !data.draft : true
+)).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const fmt = (d) =>
+  d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
+---
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <BaseHead
+      title="BITSTREAM"
+      keywords={['DJ', 'Dhruba Jyoti Paul', 'about DJ', 'Paul', 'DJ Paul', 'DJ-PAUL', 'Bitstream', "DJ's Blog"]}
+      stylesheet="/assets/css/main.css"
+    />
+  </head>
+  <body>
+    <div id="main">
+      <!-- Center Div -->
+      <div id="banner">
+        <img id="profile_pic" src="/assets/images/profile_pic_mirrored.jpg" alt="avatar" />
+        <h1>DJ's BITSTREAM</h1>
+        Collection of my thoughts on life, technology, and everything in-between.
+      </div>
+
+      <!-- Articles -->
+      <div id="articles">
+        {posts.map((post) => (
+          <article>
+            <header>
+              <a class="article_title" href={`/posts/${post.id}/`}><h2>{post.data.title}</h2></a>
+              <span class="date">{fmt(post.data.date)}</span>
+            </header>
+            <div class="article_desc">
+              {post.data.description}
+              <a class="read_more" href={`/posts/${post.id}/`}>Read more</a>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <Footer />
+    </div>
+  </body>
+</html>
